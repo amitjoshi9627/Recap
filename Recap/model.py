@@ -9,9 +9,9 @@ from torch import nn
 from torch.utils.data.dataloader import DataLoader
 
 from Recap import config
-from Recap.constants.constants import ModelKeys, ServingKeys
-from Recap.ml_engine.data_loader import SummarizerDataset
-from Recap.utils import tools
+from Recap.constants import ModelKeys, ServingKeys
+from Recap.dataset import SummarizerDataset
+from Recap import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),

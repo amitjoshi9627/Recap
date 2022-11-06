@@ -13,11 +13,11 @@ from typing import Dict, Optional
 from torch.utils.data.dataloader import DataLoader
 
 from Recap import config
-from Recap.constants.constants import ServingKeys, TestingKeys, TrainingKeys
-from Recap.ml_engine.data_loader import SummarizerDataset
-from Recap.ml_engine.engine import SummarizerEngine
-from Recap.ml_engine.model import SummarizerBackbone
-from Recap.utils import tools
+from Recap.constants import ServingKeys, TestingKeys, TrainingKeys
+from Recap.dataset import SummarizerDataset
+from Recap.engine import SummarizerEngine
+from Recap.model import SummarizerBackbone
+from Recap import tools
 
 # Appending the Package path to the system PATH variable
 sys.path.append("../")
@@ -44,15 +44,14 @@ def arg_parser():
         required=True,
     )
     parser.add_argument(
-        "--func_test",
-        help="run the package in the testing mode, value = all, runs all the test."
-        "Value = train/serve/eval, runs the package evaluation in a specific mode",
+        "--file_path",
+        help="Input data file path for serving the model",
         type=str,
         required=False,
     )
     parser.add_argument(
-        "--file_path",
-        help="Input data file path for serving the model",
+        "--text",
+        help="text to be summarised",
         type=str,
         required=False,
     )
@@ -61,32 +60,26 @@ def arg_parser():
     return args
 
 
-def network(
-    mode: str, json_data: Optional[Dict] = None, func_test: bool = False
-) -> SummarizerEngine:
+def network(mode: str, json_data: Optional[Dict] = None) -> SummarizerEngine:
     """
     Function to initialise the Summarizer engine for using the model in train, eval or serve mode
 
     Parameters:
         mode: {`train`, `eval`, `serve`} mode of Summarizer model
         json_data: input JSON for the model
-        func_test: True for functional testing of package
 
     Returns:
         Summarizer Engine class which contains the method train, evaluate and serve for the Summarizer model
 
     """
     # Initialize Model Creator Class, load the model architecture and the weights.
-    model_name = config.SUMMARIZATION_MODEL
 
     if mode == TrainingKeys.TRAIN.value:
         shuffle = True
+        model_name = config.SUMMARIZATION_MODEL
     else:
         shuffle = False
-        if func_test is True:
-            model_name = config.FINETUNED_MODEL
-        else:
-            model_name = config.BASE_FINETUNED_MODEL
+        model_name = config.BASE_FINETUNED_MODEL
 
     backbone_model = SummarizerBackbone(model_name)
 
@@ -217,49 +210,41 @@ def main() -> None:
 
     """
     cmd_args = arg_parser()
-    if cmd_args.func_test:
+    if cmd_args.mode == TrainingKeys.TRAIN.value:
 
-        # Running the functional test
-        logging.debug("Initializing Summarizer package's functional testing..")
+        #  Training the model
+        logging.debug("Initializing Summarizer model for training..")
 
-        package_test(cmd_args.func_test)
+        model_engine = network(cmd_args.mode)
+        model_engine.train()
+
+    elif cmd_args.mode == TestingKeys.EVAL.value:
+
+        # Evaluating the model
+        logging.debug("Initializing Summarizer model for Evaluation..")
+
+        model_engine = network(cmd_args.mode)
+        model_engine.evaluate()
+
+    elif cmd_args.mode == ServingKeys.serve.value:
+
+        # Serving process of the model
+        logging.debug("Initializing Summarizer model for Serving..")
+
+        if cmd_args.file_path:
+            json_data = tools.load_json(cmd_args.file_path)
+        else:
+            json_data = None
+
+        model_engine = network(cmd_args.mode, json_data)
+        response = model_engine.serve()
+
+        logging.debug(f"The response from the Model : {response}")
 
     else:
-        if cmd_args.mode == TrainingKeys.TRAIN.value:
+        logging.exception("Invalid Argument mode argument passed..", exc_info=True)
 
-            #  Training the model
-            logging.debug("Initializing Summarizer model for training..")
-
-            model_engine = network(cmd_args.mode)
-            model_engine.train()
-
-        elif cmd_args.mode == TestingKeys.EVAL.value:
-
-            # Evaluating the model
-            logging.debug("Initializing Summarizer model for Evaluation..")
-
-            model_engine = network(cmd_args.mode)
-            model_engine.evaluate()
-
-        elif cmd_args.mode == ServingKeys.serve.value:
-
-            # Serving process of the model
-            logging.debug("Initializing Summarizer model for Serving..")
-
-            if cmd_args.file_path:
-                json_data = tools.load_json(cmd_args.file_path)
-            else:
-                json_data = None
-
-            model_engine = network(cmd_args.mode, json_data)
-            response = model_engine.serve()
-
-            logging.debug(f"The response from the Model : {response}")
-
-        else:
-            logging.exception("Invalid Argument mode argument passed..", exc_info=True)
-
-        return None
+    return None
 
 
 if __name__ == "__main__":

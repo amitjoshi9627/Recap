@@ -7,8 +7,8 @@ from rouge_score import rouge_scorer
 from torch.utils.data.dataloader import DataLoader
 
 from Recap import config
-from Recap.ml_engine.model import SummarizerBackbone
-from Recap.utils import tools
+from Recap.model import SummarizerBackbone
+from Recap import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),
@@ -19,6 +19,7 @@ logging.basicConfig(
 
 def train(model: SummarizerBackbone, train_data: DataLoader) -> SummarizerBackbone:
     """
+
     Function to train the T5 model
 
     Parameters:
@@ -74,16 +75,13 @@ def train(model: SummarizerBackbone, train_data: DataLoader) -> SummarizerBackbo
     return model
 
 
-def train_model(
-    model: SummarizerBackbone, train_data: Union[DataLoader, List], func_test: bool
-) -> None:
+def train_model(model: SummarizerBackbone, train_data: Union[DataLoader, List]) -> None:
     """
     Wrapper function for training of Summarizer model
 
     Parameters:
         model: Summarizer Backbone (T5 model) for training
         train_data: Input dataset for training
-        func_test: True for functional testing of package
 
     Returns:
         None
@@ -92,11 +90,8 @@ def train_model(
 
     finetuned_model = train(model, train_data)
 
-    # Saving the test model if functional testing is True else Base model
-    if func_test is True:
-        model_name = config.FINETUNED_MODEL
-    else:
-        model_name = config.BASE_FINETUNED_MODEL
+    # Saving the Base finetuned model
+    model_name = config.BASE_FINETUNED_MODEL
     tools.save_model(model_name, finetuned_model.model, finetuned_model.tokenizer)
 
     return None

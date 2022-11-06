@@ -7,8 +7,8 @@ from torch import tensor
 from torch.utils.data.dataset import Dataset
 
 from Recap import config
-from Recap.constants.constants import ServingKeys, TestingKeys, TrainingKeys
-from Recap.utils import tools
+from Recap.constants import ServingKeys, TestingKeys, TrainingKeys
+from Recap import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),

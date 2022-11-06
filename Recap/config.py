@@ -5,7 +5,7 @@ from datetime import datetime
 BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
 )  # Base Directory of Classifier Module
-INPUT_DIR = os.path.join(BASE_DIR, "dataset")
+INPUT_DIR = os.path.join(BASE_DIR, "local_assets")
 OUTPUT_DIR = os.path.join(BASE_DIR, "results")
 MODEL_DIR = os.path.join(BASE_DIR, "saved_models")
 OUTPUT_LOG = os.path.join(OUTPUT_DIR, "run_logs")  # Output directory for saving Logs
