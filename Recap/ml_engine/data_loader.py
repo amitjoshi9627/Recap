@@ -6,9 +6,9 @@ from typing import Optional, Dict, List, Tuple
 from torch import tensor
 from torch.utils.data.dataset import Dataset
 
-from Summarizer import config
-from Summarizer.constants.constants import ServingKeys, TestingKeys, TrainingKeys
-from Summarizer.utils import tools
+from Recap import config
+from Recap.constants.constants import ServingKeys, TestingKeys, TrainingKeys
+from Recap.utils import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),
@@ -49,7 +49,9 @@ class SummarizerDataset(Dataset):
 
         if mode == TrainingKeys.RETRAIN.value:
             # Code block for retraining of model from feedback loop [TBD].
-            raise NotImplementedError("Retraining part of the model is yet to be implemented")
+            raise NotImplementedError(
+                "Retraining part of the model is yet to be implemented"
+            )
 
         self.texts = []
         self.summaries = []
@@ -62,7 +64,9 @@ class SummarizerDataset(Dataset):
                 self.texts = self._extract_texts_from_json(json_data=json_data)
 
                 if mode == TrainingKeys.TRAIN.value:
-                    self.summaries = self._extract_summaries_from_json(json_data=json_data)
+                    self.summaries = self._extract_summaries_from_json(
+                        json_data=json_data
+                    )
 
             except Exception:
                 logging.debug("Error Loading JSON file for serving ...", exc_info=True)
@@ -82,7 +86,9 @@ class SummarizerDataset(Dataset):
                 self.json_data = json_data
 
             except Exception:
-                logging.debug("Error loading JSON file for functional testing ...", exc_info=True)
+                logging.debug(
+                    "Error loading JSON file for functional testing ...", exc_info=True
+                )
                 raise
 
         # Loading data for training of the model
@@ -146,15 +152,24 @@ class SummarizerDataset(Dataset):
             "attention_mask": src_mask,
         }
 
-        if self.mode == TrainingKeys.TRAIN.value or self.mode == TrainingKeys.RETRAIN.value:
+        if (
+            self.mode == TrainingKeys.TRAIN.value
+            or self.mode == TrainingKeys.RETRAIN.value
+        ):
             # Preprocessing and tokenizing the summaries when mode is training
 
-            target_ = self.clean_text(self.summaries[index])  # Preprocessing the summaries
-            targets = self.model.tokenize(target_, **tgt_kwargs)  # Tokenizing the summaries
+            target_ = self.clean_text(
+                self.summaries[index]
+            )  # Preprocessing the summaries
+            targets = self.model.tokenize(
+                target_, **tgt_kwargs
+            )  # Tokenizing the summaries
 
             labels = targets["input_ids"].squeeze()
             target_mask = targets["attention_mask"].squeeze()
-            labels[labels[:] == self.model.tokenizer.pad_token_id] = -100  # Padding the labels
+            labels[
+                labels[:] == self.model.tokenizer.pad_token_id
+            ] = -100  # Padding the labels
 
             encodings["labels"] = labels
             encodings["decoder_attention_mask"] = target_mask

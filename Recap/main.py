@@ -12,12 +12,12 @@ from typing import Dict, Optional
 
 from torch.utils.data.dataloader import DataLoader
 
-from Summarizer import config
-from Summarizer.constants.constants import ServingKeys, TestingKeys, TrainingKeys
-from Summarizer.ml_engine.data_loader import SummarizerDataset
-from Summarizer.ml_engine.engine import SummarizerEngine
-from Summarizer.ml_engine.model import SummarizerBackbone
-from Summarizer.utils import tools
+from Recap import config
+from Recap.constants.constants import ServingKeys, TestingKeys, TrainingKeys
+from Recap.ml_engine.data_loader import SummarizerDataset
+from Recap.ml_engine.engine import SummarizerEngine
+from Recap.ml_engine.model import SummarizerBackbone
+from Recap.utils import tools
 
 # Appending the Package path to the system PATH variable
 sys.path.append("../")

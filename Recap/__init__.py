@@ -5,11 +5,11 @@ from typing import Dict, Union, List
 import numpy as np
 from torch.utils.data.dataloader import DataLoader
 
-from Summarizer import config
-from Summarizer.ml_engine.data_loader import SummarizerDataset
-from Summarizer.ml_engine.engine import SummarizerEngine
-from Summarizer.ml_engine.model import SummarizerBackbone
-from Summarizer.utils import tools
+from Recap import config
+from Recap.ml_engine.data_loader import SummarizerDataset
+from Recap.ml_engine.engine import SummarizerEngine
+from Recap.ml_engine.model import SummarizerBackbone
+from Recap.utils import tools
 
 sys.path.insert(1, os.getcwd())
 

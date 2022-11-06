@@ -4,9 +4,9 @@ import time
 import pandas as pd
 from summarizers import Summarizers
 
-from Summarizer import config
-from Summarizer import model_serve
-from Summarizer.utils import tools
+from Recap import config
+from Recap import model_serve
+from Recap.utils import tools
 
 
 def new_model_serve(texts):

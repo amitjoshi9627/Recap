@@ -4,12 +4,12 @@ from typing import Dict, Union
 
 from torch.utils.data.dataloader import DataLoader
 
-from Summarizer import config
-from Summarizer.constants.constants import ServingKeys
-from Summarizer.ml_engine.data_loader import SummarizerDataset
-from Summarizer.ml_engine.model import SummarizerBackbone
-from Summarizer.ml_engine.train import evaluate, train_model
-from Summarizer.utils import tools
+from Recap import config
+from Recap.constants.constants import ServingKeys
+from Recap.ml_engine.data_loader import SummarizerDataset
+from Recap.ml_engine.model import SummarizerBackbone
+from Recap.ml_engine.train import evaluate, train_model
+from Recap.utils import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),
