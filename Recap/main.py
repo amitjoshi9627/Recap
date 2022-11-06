@@ -133,7 +133,7 @@ def evaluate(func_test: bool = False) -> None:
         None
 
     """
-    model_engine = network(TrainingKeys.EVAL.value, func_test=func_test)
+    model_engine = network(TestingKeys.EVAL.value, func_test=func_test)
     model_engine.evaluate()
 
     return None
@@ -233,7 +233,7 @@ def main() -> None:
             model_engine = network(cmd_args.mode)
             model_engine.train()
 
-        elif cmd_args.mode == TrainingKeys.EVAL.value:
+        elif cmd_args.mode == TestingKeys.EVAL.value:
 
             # Evaluating the model
             logging.debug("Initializing Summarizer model for Evaluation..")
