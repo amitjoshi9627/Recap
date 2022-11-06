@@ -1,4 +1,4 @@
-# Hi, I'm Recap! (A Summarizer) 👋
+# Hi, I'm Recap 👋
 
 I am a module known for summarizing a given sentence/ sentences of texts and I am cooool! 🧊
 
