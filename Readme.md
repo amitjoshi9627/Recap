@@ -19,7 +19,7 @@ SWOT Analysis is a technique that helps you identify strengths, weakness, opport
 ## How to use me ? 💁
 
 ```javascript
-from Summarizer import model_serve
+from Recap import model_serve
 
 response = model_serve(test_input)
 ```
@@ -29,7 +29,7 @@ response = model_serve(test_input)
 No issues! check me, run the following command. Let me give you some dependency issues
 
 ```
-python main.py --mode=package_test --func_test=all --file_path=path/to/file.json [optional]
+python -m Recap.main --mode=package_test --func_test=all --file_path=path/to/file.json [optional]
 ```
 
 **Here are the the different options for package test**:
@@ -48,7 +48,7 @@ component of this module into API integration or MLOPs engine.
 - _mode_="serve" - run the serving component of the package.
 - _mode_="eval" - run the evaluation component of the package.
 
-`python main.py --mode=serve`
+`python -m Recap.main --mode=serve`
 
 ### Do the Parameters Setup
 
@@ -80,7 +80,7 @@ Provide me with some data for training inside dataset/ folder and don't forget t
 **You have no idea. Really? Why don't I give you a hint.**
 
 ```sh
-python main.py --mode=train
+python -m Recap.main --mode=train
 ```
 
 That was more than a hint. But it's okay
