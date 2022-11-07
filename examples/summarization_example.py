@@ -29,5 +29,3 @@ model_engine = SummarizerEngine(
 )
 
 response = model_engine.serve(save_result=False)
-
-print(response)
