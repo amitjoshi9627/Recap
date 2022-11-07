@@ -102,14 +102,16 @@ class SummarizerEngine:
             machine_summaries = self.model.predict(self.data_loader)
             logging.debug("Prediction Done...")
 
-            json_data = self.dataset.json_data
+            if self.dataset.json_data:
 
-            # Update the output dict for the API Plugin
-            logging.debug("Generating response dictionary for API plugin")
+                # Update the output dict for the API Plugin
+                logging.debug("Generating response dictionary for API plugin")
 
-            response = tools.get_response(
-                machine_summaries, json_data, status=ServingKeys.SUCCESS.value
-            )
+                response = self.dataset.get_response(
+                    machine_summaries,
+                    self.dataset.json_data,
+                    status=ServingKeys.SUCCESS.value,
+                )
 
             # Check if serving is run in the save mode, and store output locally.
             if save_result is True:

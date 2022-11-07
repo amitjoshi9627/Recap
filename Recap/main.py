@@ -181,7 +181,7 @@ def package_test(test_mode: str) -> None:
 
         logging.debug("Training component test passed..")
 
-    elif test_mode == ServingKeys.serve.value:
+    elif test_mode == ServingKeys.SERVE.value:
 
         logging.debug("Testing Serving component")
 
@@ -226,7 +226,7 @@ def main() -> None:
         model_engine = network(cmd_args.mode)
         model_engine.evaluate()
 
-    elif cmd_args.mode == ServingKeys.serve.value:
+    elif cmd_args.mode == ServingKeys.SERVE.value:
 
         # Serving process of the model
         logging.debug("Initializing Summarizer model for Serving..")

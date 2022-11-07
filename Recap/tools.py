@@ -78,10 +78,7 @@ def save_json(json_data, json_path=None):
     logging.info(f"JSON Saved.")
 
 
-def load_json(json_path=None):
-    if json_path is None:
-        json_path = config.TEST_JSON
-    path = os.path.join(config.INPUT_DIR, json_path)
+def load_json(path: Optional[dict] = None) -> dict:
     with open(path) as file:
         json_data = json.load(file)
     return json_data
@@ -128,8 +125,7 @@ def get_response(predictions: List, json_data: Dict, status: str) -> Dict:
         Response JSON
     """
     json_data["status"] = status
-    json_data["model"] = "Summarizer"
-    status = status.lower()
+    json_data["model"] = "Recap"
 
     for index, chunk_dict in enumerate(json_data[config.response_column]):
         prediction = predictions[index]
