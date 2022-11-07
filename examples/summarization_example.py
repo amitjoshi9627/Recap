@@ -12,7 +12,7 @@ model_name = config.BASE_FINETUNED_MODEL
 
 backbone_model = SummarizerBackbone(model_name)
 
-json_data = load_json(json_path="examples/assets/example.json")
+json_data = load_json(path="examples/assets/example.json")
 # Initializing the dataset
 dataset = SummarizerDataset(
     backbone_model, json_data=json_data, mode=ServingKeys.SERVE.value
