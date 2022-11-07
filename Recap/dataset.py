@@ -1,13 +1,13 @@
 import logging
 import os
 import re
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List, Tuple, Union
 
 from torch import tensor
 from torch.utils.data.dataset import Dataset
 
 from Recap import config
-from Recap.constants import ServingKeys, TestingKeys, TrainingKeys
+from Recap.constants import SchemaKeys, ServingKeys, TestingKeys, TrainingKeys
 from Recap import tools
 
 logging.basicConfig(
@@ -27,7 +27,7 @@ class SummarizerDataset(Dataset):
         json_data: Input JSON data for training / serving
         text_list: list of texts for training / serving
         summary_list: list of summaries corresponding to text_list. Mandatory to pass this if `is_train` is True
-        mode: {`train`, `eval`, `serve`} mode of running the model
+        mode: {`train`, `serve`} mode of running the model
 
     """
 
@@ -42,72 +42,35 @@ class SummarizerDataset(Dataset):
 
         super().__init__()
 
-        if text_list is not None:
-            json_data = tools.list_to_json(text_list, summary_list)
-
-        self.json_data = json_data
-
         if mode == TrainingKeys.RETRAIN.value:
             # Code block for retraining of model from feedback loop [TBD].
             raise NotImplementedError(
                 "Retraining part of the model is yet to be implemented"
             )
 
-        self.texts = []
-        self.summaries = []
+        self.texts = text_list or []
+        self.summaries = summary_list or []
 
         # if JSON is provided
         if json_data is not None:
-            try:
-                logging.debug("Loading Json file for serving...")
+            logging.debug("Loading Json file for serving...")
 
-                self.texts = self._extract_texts_from_json(json_data=json_data)
+            self.texts = self._extract_texts_from_json(json_data=json_data)
 
-                if mode == TrainingKeys.TRAIN.value:
-                    self.summaries = self._extract_summaries_from_json(
-                        json_data=json_data
-                    )
+            if mode == TrainingKeys.TRAIN.value:
+                self.summaries = self._extract_summaries_from_json(json_data=json_data)
 
-            except Exception:
-                logging.debug("Error Loading JSON file for serving ...", exc_info=True)
-                raise
+        # Loading data for training of the model from sample file in local_assets
+        if not self.texts:
+            logging.debug("Loading training CSV file ...")
 
-        # If JSON is not provided and mode is serve or evaluation
-        elif mode == TestingKeys.EVAL or mode == ServingKeys.SERVE.value:
-            try:
-                logging.debug(
-                    "Loading sample JSON file for functional testing. mode - serve / eval..."
-                )
-
-                # Loading sample JSON from dataset/ folder
-                data = tools.load_json(config.TEST_JSON)
-                self.texts = self._extract_texts_from_json(data)
-                self.summaries = self._extract_summaries_from_json(data)
-                self.json_data = json_data
-
-            except Exception:
-                logging.debug(
-                    "Error loading JSON file for functional testing ...", exc_info=True
-                )
-                raise
-
-        # Loading data for training of the model
-        else:
-            try:
-                logging.debug("Loading training CSV file ...")
-                train_data_file = config.TRAINING_DATA
-                self.data = tools.load_csv(train_data_file)
-                self.texts = self.data[config.text_col].values
-                self.summaries = self.data[config.summary_col].values
-            except Exception:
-                logging.debug("Error loading CSV file ...", exc_info=True)
-                raise
-
-        # checking if samples are available or not
-        if len(self.texts) == 0:
-            logging.exception("No data samples available...")
+            train_data_file = config.TRAINING_DATA
+            self.data = tools.load_csv(train_data_file)
+            self.texts = self.data[config.text_col].values
+            self.summaries = self.data[config.summary_col].values
 
         self.mode = mode
+        self.json_data = json_data
         self.input_length = config.INPUT_LENGTH  # Max length for input texts
         self.output_length = config.OUTPUT_LENGTH  # max length for output summaries
         self.model = model
@@ -232,13 +195,13 @@ class SummarizerDataset(Dataset):
             List of texts extracted
 
         """
-        ret_arr = []
-        keys_list = json_data[config.response_column]
+        text_list = []
+        keys_list = json_data[SchemaKeys.INPUT_TEXTS.value]
 
         for key in keys_list:
-            ret_arr.append(key[config.text_col])
+            text_list.append(key[SchemaKeys.TEXT.value])
 
-        return ret_arr
+        return text_list
 
     def _extract_summaries_from_json(self, json_data: Dict) -> List:
         """
@@ -250,13 +213,43 @@ class SummarizerDataset(Dataset):
         Returns:
             List of summaries extracted
         """
-        ret_arr = []
-        keys_list = json_data[config.response_column]
+        summary_list = []
+        keys_list = json_data[SchemaKeys.INPUT_TEXTS.value]
 
         for key in keys_list:
-            ret_arr.append(key[config.summary_col])
+            summary_list.append(key[SchemaKeys.SUMMARY.value])
 
-        return ret_arr
+        return summary_list
+
+    def get_response(
+        self,
+        predictions: List[str],
+        json_data: Dict[str, Union[list, str]],
+        status: str,
+    ) -> Dict[str, Union[list, str]]:
+        """
+        Returns Response JSON
+
+        Parameters:
+            predictions: list of predictions/ summaries
+            json_data: Input JSON
+            status: Success or fail/ failure
+
+        Returns:
+            Response JSON
+        """
+
+        num_samples = len(json_data[SchemaKeys.INPUT_TEXTS.value])
+
+        json_data[SchemaKeys.STATUS.value] = status
+        json_data[SchemaKeys.MODEL.value] = config.MODEL_NAME
+
+        for ind in range(num_samples):
+            json_data[SchemaKeys.INPUT_TEXTS.value][ind][
+                SchemaKeys.SUMMARY.value
+            ] = predictions[ind]
+
+        return json_data
 
     def __len__(self):
         return len(self.texts)

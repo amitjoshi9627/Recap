@@ -36,3 +36,15 @@ class ModelKeys(Enum):
 
     CUDA = "cuda"
     CPU = "cpu"
+
+
+class SchemaKeys(Enum):
+    """
+    Keys used by schema
+    """
+
+    INPUT_TEXTS = "input_texts"
+    TEXT = "text"
+    SUMMARY = "summary"
+    MODEL = "model"
+    STATUS = "status"

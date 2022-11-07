@@ -128,8 +128,7 @@ def get_response(predictions: List, json_data: Dict, status: str) -> Dict:
         Response JSON
     """
     json_data["status"] = status
-    json_data["model"] = "Summarizer"
-    status = status.lower()
+    json_data["model"] = "Recap"
 
     for index, chunk_dict in enumerate(json_data[config.response_column]):
         prediction = predictions[index]

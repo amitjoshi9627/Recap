@@ -31,6 +31,8 @@ text_col = "transcript"
 response_column = "response"
 chunk_id = "chunk_id"
 
+MODEL_NAME = "Summarizer"
+
 SUMMARIZATION_MODEL = "t5-small"  # pretrained T5 model name
 FINETUNED_MODEL = "T5 Test Model"  # Model name for functional testing
 BASE_FINETUNED_MODEL = "Fine Tuned T5"  # Base fine tuned model
