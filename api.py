@@ -1,8 +1,6 @@
 from typing import List
-from Recap import Summarizers
 
-from Recap import config
-from Recap import model_serve
+from Recap import Summarizers, config, model_serve
 
 
 def serve(text_list: List[str]) -> List[str]:

@@ -4,12 +4,11 @@ from typing import Dict, Union
 
 from torch.utils.data.dataloader import DataLoader
 
-from Recap import config
+from Recap import config, tools
 from Recap.constants import ServingKeys
 from Recap.dataset import SummarizerDataset
 from Recap.model import SummarizerBackbone
 from Recap.train import evaluate, train_model
-from Recap import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),

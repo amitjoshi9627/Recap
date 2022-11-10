@@ -6,8 +6,7 @@ from typing import Dict, List, Optional, Union
 import bson
 import numpy as np
 import pandas as pd
-from transformers import PreTrainedModel
-from transformers import PreTrainedTokenizer
+from transformers import PreTrainedModel, PreTrainedTokenizer
 
 from Recap import config
 
@@ -78,7 +77,7 @@ def save_json(json_data, json_path=None):
     logging.info(f"JSON Saved.")
 
 
-def load_json(path: Optional[dict] = None) -> dict:
+def load_json(path: str) -> dict:
     with open(path) as file:
         json_data = json.load(file)
     return json_data
@@ -88,9 +87,7 @@ def parse_json(json_data):
     return json.loads(json.dumps(json_data, cls=JSONEncoder))
 
 
-def list_to_json(
-    text_list: List, labels_list: Optional[List] = None
-) -> Dict[str, list]:
+def list_to_json(text_list: List, labels_list: Optional[List] = None) -> Dict[str, list]:
     """
     Function that converts a list of texts to defined JSON format for passing it to the dataset class
 

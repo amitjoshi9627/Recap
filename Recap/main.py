@@ -12,12 +12,11 @@ from typing import Dict, Optional
 
 from torch.utils.data.dataloader import DataLoader
 
-from Recap import config
+from Recap import config, tools
 from Recap.constants import ServingKeys, TestingKeys, TrainingKeys
 from Recap.dataset import SummarizerDataset
 from Recap.engine import SummarizerEngine
 from Recap.model import SummarizerBackbone
-from Recap import tools
 
 # Appending the Package path to the system PATH variable
 sys.path.append("../")
