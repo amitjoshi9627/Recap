@@ -6,9 +6,8 @@ from typing import Dict, List, Union
 from rouge_score import rouge_scorer
 from torch.utils.data.dataloader import DataLoader
 
-from Recap import config
+from Recap import config, tools
 from Recap.model import SummarizerBackbone
-from Recap import tools
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),
@@ -68,9 +67,7 @@ def train(model: SummarizerBackbone, train_data: DataLoader) -> SummarizerBackbo
 
             del batch  # Clearing batch_data from memory
 
-    logging.debug(
-        f"[{model.model_name}] Training took {round(time.time() - t0, 2)} seconds"
-    )
+    logging.debug(f"[{model.model_name}] Training took {round(time.time() - t0, 2)} seconds")
 
     return model
 

@@ -1,19 +1,20 @@
-from Recap.engine import SummarizerEngine
-from Recap.model import SummarizerBackbone
-from Recap.dataset import SummarizerDataset
 from torch.utils.data.dataloader import DataLoader
+
 from Recap import config
 from Recap.constants import ServingKeys
+from Recap.dataset import SummarizerDataset
+from Recap.engine import SummarizerEngine
+from Recap.model import SummarizerBackbone
 from Recap.tools import load_json
 
 model_name = config.BASE_FINETUNED_MODEL
 
 # Serve mode
+json_data = load_json(path="examples/assets/example.json")
 
+# Initializing the dataset
 backbone_model = SummarizerBackbone(model_name)
 
-json_data = load_json(path="examples/assets/example.json")
-# Initializing the dataset
 dataset = SummarizerDataset(
     backbone_model, json_data=json_data, mode=ServingKeys.SERVE.value
 )

@@ -1,15 +1,14 @@
 import os
 import sys
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 import numpy as np
 from torch.utils.data.dataloader import DataLoader
 
-from Recap import config
+from Recap import config, tools
 from Recap.dataset import SummarizerDataset
 from Recap.engine import SummarizerEngine
 from Recap.model import SummarizerBackbone
-from Recap import tools
 
 sys.path.insert(1, os.getcwd())
 

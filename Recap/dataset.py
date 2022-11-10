@@ -1,14 +1,15 @@
 import logging
 import os
 import re
-from typing import Optional, Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
+from jsonschema import validate
 from torch import tensor
 from torch.utils.data.dataset import Dataset
 
-from Recap import config
-from Recap.constants import SchemaKeys, ServingKeys, TestingKeys, TrainingKeys
-from Recap import tools
+from Recap import config, tools
+from Recap.constants import SchemaKeys, TrainingKeys
+from Recap.schema import input_schema
 
 logging.basicConfig(
     filename=os.path.join(config.OUTPUT_LOG, config.LOG_FILE),
@@ -44,15 +45,16 @@ class SummarizerDataset(Dataset):
 
         if mode == TrainingKeys.RETRAIN.value:
             # Code block for retraining of model from feedback loop [TBD].
-            raise NotImplementedError(
-                "Retraining part of the model is yet to be implemented"
-            )
+            raise NotImplementedError("Retraining part of the model is yet to be implemented")
 
         self.texts = text_list or []
         self.summaries = summary_list or []
 
         # if JSON is provided
         if json_data is not None:
+
+            self.validate_json(json_data)
+
             logging.debug("Loading Json file for serving...")
 
             self.texts = self._extract_texts_from_json(json_data=json_data)
@@ -74,6 +76,9 @@ class SummarizerDataset(Dataset):
         self.input_length = config.INPUT_LENGTH  # Max length for input texts
         self.output_length = config.OUTPUT_LENGTH  # max length for output summaries
         self.model = model
+
+    def validate_json(self, json_data: dict):
+        validate(json_data, schema=input_schema)
 
     def get_index_item(self, index: int) -> Tuple[bool, Dict[str, tensor]]:
         """Returns tokenized texts and labels(if mode is train) for the given index"""
@@ -115,24 +120,15 @@ class SummarizerDataset(Dataset):
             "attention_mask": src_mask,
         }
 
-        if (
-            self.mode == TrainingKeys.TRAIN.value
-            or self.mode == TrainingKeys.RETRAIN.value
-        ):
+        if self.mode == TrainingKeys.TRAIN.value or self.mode == TrainingKeys.RETRAIN.value:
             # Preprocessing and tokenizing the summaries when mode is training
 
-            target_ = self.clean_text(
-                self.summaries[index]
-            )  # Preprocessing the summaries
-            targets = self.model.tokenize(
-                target_, **tgt_kwargs
-            )  # Tokenizing the summaries
+            target_ = self.clean_text(self.summaries[index])  # Preprocessing the summaries
+            targets = self.model.tokenize(target_, **tgt_kwargs)  # Tokenizing the summaries
 
             labels = targets["input_ids"].squeeze()
             target_mask = targets["attention_mask"].squeeze()
-            labels[
-                labels[:] == self.model.tokenizer.pad_token_id
-            ] = -100  # Padding the labels
+            labels[labels[:] == self.model.tokenizer.pad_token_id] = -100  # Padding the labels
 
             encodings["labels"] = labels
             encodings["decoder_attention_mask"] = target_mask
@@ -245,9 +241,9 @@ class SummarizerDataset(Dataset):
         json_data[SchemaKeys.MODEL.value] = config.MODEL_NAME
 
         for ind in range(num_samples):
-            json_data[SchemaKeys.INPUT_TEXTS.value][ind][
-                SchemaKeys.SUMMARY.value
-            ] = predictions[ind]
+            json_data[SchemaKeys.INPUT_TEXTS.value][ind][SchemaKeys.SUMMARY.value] = predictions[
+                ind
+            ]
 
         return json_data
 
