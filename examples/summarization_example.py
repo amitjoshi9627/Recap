@@ -1,4 +1,3 @@
-from jsonschema import validate
 from torch.utils.data.dataloader import DataLoader
 
 from Recap import config
@@ -13,8 +12,6 @@ model_name = config.BASE_FINETUNED_MODEL
 
 # Serve mode
 json_data = load_json(path="examples/assets/example.json")
-
-validate(json_data, schema=input_schema)
 
 # Initializing the dataset
 backbone_model = SummarizerBackbone(model_name)
