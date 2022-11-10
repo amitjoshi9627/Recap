@@ -9,6 +9,7 @@ input_schema = {
                     "text": {"type": "string"},
                     "summary": {"type": "string"},
                 },
+                "minItems": 1,
                 "required": ["text"],
             },
         },
