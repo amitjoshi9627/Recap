@@ -8,7 +8,7 @@ import argparse
 import logging
 import os
 import sys
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from torch.utils.data.dataloader import DataLoader
 
@@ -104,34 +104,26 @@ def train(func_test: bool = False) -> None:
     Parameters:
         func_test: True for model's package testing
 
-    Returns:
-        None
-
     """
-    model_engine = network(TrainingKeys.TRAIN.value, func_test=func_test)
+    model_engine = network(TrainingKeys.TRAIN.value)
     model_engine.train(func_test=func_test)
 
-    return None
 
-
-def evaluate(func_test: bool = False) -> None:
+def evaluate(X_test: List[str], y_test: List[str]):
     """
     Wrapper function for Evaluation of the Summarizer model engine
 
-    Parameters:
-        func_test: True for model's package testing
-
-    Returns:
-        None
+    Arguments:
+        : True for model's package testing
 
     """
-    model_engine = network(TestingKeys.EVAL.value, func_test=func_test)
+    
+
+    model_engine = network(TestingKeys.EVAL.value)
     model_engine.evaluate()
 
-    return None
 
-
-def serve(json_data: Optional[Dict] = None, save_result: bool = False):
+def serve(json_data: Optional[Dict] = None, save_result: bool = False) -> dict:
     """
     Wrapper function for serving of the Summarizer model engine
 
@@ -148,61 +140,6 @@ def serve(json_data: Optional[Dict] = None, save_result: bool = False):
     return response
 
 
-def package_test(test_mode: str) -> None:
-    """
-    Package test for functional testing of the Summarizer package
-
-    Parameters:
-        test_mode:{`all`, `train`, `test`, `eval`} mode of the functional testing
-
-    Returns:
-        None
-
-    """
-    if test_mode == TestingKeys.ALL.value:
-
-        logging.debug("Testing all the components of the package..")
-
-        train(func_test=True)
-        logging.debug("Training Component test passed..")
-
-        evaluate()
-        logging.debug("Evaluation Component test passed..")
-
-        serve(save_result=True)
-        logging.debug("Serving component test passed..")
-
-    elif test_mode == TrainingKeys.TRAIN.value:
-
-        logging.debug("Testing Training component..")
-
-        train(func_test=True)
-
-        logging.debug("Training component test passed..")
-
-    elif test_mode == ServingKeys.SERVE.value:
-
-        logging.debug("Testing Serving component")
-
-        serve(save_result=True)
-
-        logging.debug("Serving component test passed..")
-
-    elif test_mode == TestingKeys.EVAL.value:
-
-        logging.debug("Testing Evaluation component")
-
-        evaluate()
-
-        logging.debug("Evaluating Component passed..")
-
-    else:
-        logging.exception(
-            "Invalid argument for func_test. Argument should be from {`all`, `train`, `test`, `eval`}"
-        )
-    return None
-
-
 def main() -> None:
     """
     Main function for the Summarizer package
@@ -216,14 +153,6 @@ def main() -> None:
 
         model_engine = network(cmd_args.mode)
         model_engine.train()
-
-    elif cmd_args.mode == TestingKeys.EVAL.value:
-
-        # Evaluating the model
-        logging.debug("Initializing Summarizer model for Evaluation..")
-
-        model_engine = network(cmd_args.mode)
-        model_engine.evaluate()
 
     elif cmd_args.mode == ServingKeys.SERVE.value:
 
@@ -242,8 +171,6 @@ def main() -> None:
 
     else:
         logging.exception("Invalid Argument mode argument passed..", exc_info=True)
-
-    return None
 
 
 if __name__ == "__main__":
