@@ -16,28 +16,30 @@ If you look at yourself using the SWOT framework, you can start to separate your
 **Summary**
 SWOT Analysis is a technique that helps you identify strengths, weakness, opportunities, and threats. Understanding and managing these factors helps you to develop the abilities you need to achieve your goals and progress in your career.
 
-## How to use me ? 💁
+## How to use me quickly ? 💁
 
 ```javascript
-from Recap import model_serve
+from Recap.serve import model_serve
 
 response = model_serve(test_input)
 ```
 
 ## Want to test me ? 🧐
 
-No issues! check me, run the following command. Let me give you some dependency issues
+No issues! check me, Let me give you some dependency issues
 
+
+## Something related to installation 🔨
+
+Dude! Install the dependencies.
+
+```sh
+pip install -r requirements.txt
 ```
-python -m Recap.main --mode=package_test --func_test=all --file_path=path/to/file.json [optional]
-```
 
-**Here are the the different options for package test**:
+## Deeper API use ? 🧐
 
-- _func_test_ = "all" -> runs test for all the components.
-- _func_test_ = "train" -> runs the test for training component only.
-- _func_test_ = "serve" -> runs the test for serving component only.
-- _func_test_ = "eval" -> runs the test for evaluation component only.
+Just go to `examples/summarization_example.py` for better understanding.
 
 #### Here is my Pluggable Component ⚓
 
@@ -63,13 +65,6 @@ component of this module into API integration or MLOPs engine.
 
 **SUMM_THRESHOLD:** Length threshold for generating summary or not.
 
-## Something related to installation 🔨
-
-Dude! Install the dependencies.
-
-```sh
-pip install -r requirements.txt
-```
 
 ## How to fuel me ? ⛽
 
