@@ -40,19 +40,12 @@ class SummarizerEngine:
         self.dataset = dataset
         self.data_loader = data_loader
 
-    def train(self, func_test: bool = False) -> None:
+    def train(self) -> None:
         """
         Training method for Summarizer. Saves the model after training of model is completed
-
-        Parameters:
-            func_test: True for functional testing of summarizer package
-
-        Returns:
-            None
-
         """
 
-        train_model(self.model, train_data=self.data_loader, func_test=func_test)
+        train_model(self.model, train_data=self.data_loader)
 
         return None
 
