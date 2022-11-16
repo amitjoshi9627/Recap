@@ -67,7 +67,9 @@ def train(model: SummarizerBackbone, train_data: DataLoader) -> SummarizerBackbo
 
             del batch  # Clearing batch_data from memory
 
-    logging.debug(f"[{model.model_name}] Training took {round(time.time() - t0, 2)} seconds")
+    logging.debug(
+        f"[{model.model_name}] Training took {round(time.time() - t0, 2)} seconds"
+    )
 
     return model
 

@@ -2,7 +2,9 @@ import os
 from datetime import datetime
 
 # File Directories
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Base Directory of Classifier Module
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)  # Base Directory of Classifier Module
 INPUT_DIR = os.path.join(BASE_DIR, "local_assets")
 OUTPUT_DIR = os.path.join(BASE_DIR, "results")
 MODEL_DIR = os.path.join(BASE_DIR, "saved_models")

@@ -117,7 +117,6 @@ def evaluate(X_test: List[str], y_test: List[str]):
         : True for model's package testing
 
     """
-    
 
     model_engine = network(TestingKeys.EVAL.value)
     model_engine.evaluate()

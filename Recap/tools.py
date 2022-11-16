@@ -87,7 +87,9 @@ def parse_json(json_data):
     return json.loads(json.dumps(json_data, cls=JSONEncoder))
 
 
-def list_to_json(text_list: List, labels_list: Optional[List] = None) -> Dict[str, list]:
+def list_to_json(
+    text_list: List, labels_list: Optional[List] = None
+) -> Dict[str, list]:
     """
     Function that converts a list of texts to defined JSON format for passing it to the dataset class
 

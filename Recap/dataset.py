@@ -45,7 +45,9 @@ class SummarizerDataset(Dataset):
 
         if mode == TrainingKeys.RETRAIN.value:
             # Code block for retraining of model from feedback loop [TBD].
-            raise NotImplementedError("Retraining part of the model is yet to be implemented")
+            raise NotImplementedError(
+                "Retraining part of the model is yet to be implemented"
+            )
 
         self.texts = text_list or []
         self.summaries = summary_list or []
@@ -120,15 +122,24 @@ class SummarizerDataset(Dataset):
             "attention_mask": src_mask,
         }
 
-        if self.mode == TrainingKeys.TRAIN.value or self.mode == TrainingKeys.RETRAIN.value:
+        if (
+            self.mode == TrainingKeys.TRAIN.value
+            or self.mode == TrainingKeys.RETRAIN.value
+        ):
             # Preprocessing and tokenizing the summaries when mode is training
 
-            target_ = self.clean_text(self.summaries[index])  # Preprocessing the summaries
-            targets = self.model.tokenize(target_, **tgt_kwargs)  # Tokenizing the summaries
+            target_ = self.clean_text(
+                self.summaries[index]
+            )  # Preprocessing the summaries
+            targets = self.model.tokenize(
+                target_, **tgt_kwargs
+            )  # Tokenizing the summaries
 
             labels = targets["input_ids"].squeeze()
             target_mask = targets["attention_mask"].squeeze()
-            labels[labels[:] == self.model.tokenizer.pad_token_id] = -100  # Padding the labels
+            labels[
+                labels[:] == self.model.tokenizer.pad_token_id
+            ] = -100  # Padding the labels
 
             encodings["labels"] = labels
             encodings["decoder_attention_mask"] = target_mask
@@ -241,9 +252,9 @@ class SummarizerDataset(Dataset):
         json_data[SchemaKeys.MODEL.value] = config.MODEL_NAME
 
         for ind in range(num_samples):
-            json_data[SchemaKeys.INPUT_TEXTS.value][ind][SchemaKeys.SUMMARY.value] = predictions[
-                ind
-            ]
+            json_data[SchemaKeys.INPUT_TEXTS.value][ind][
+                SchemaKeys.SUMMARY.value
+            ] = predictions[ind]
 
         return json_data
 

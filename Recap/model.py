@@ -40,7 +40,9 @@ class SummarizerBackbone(nn.Module):
                 logging.info(f"[{model_name}] Loading Model..")
 
                 model_path = path
-                self.model = transformers.T5ForConditionalGeneration.from_pretrained(model_path)
+                self.model = transformers.T5ForConditionalGeneration.from_pretrained(
+                    model_path
+                )
                 self.tokenizer = transformers.T5Tokenizer.from_pretrained(model_path)
 
             except Exception as error:
@@ -48,14 +50,18 @@ class SummarizerBackbone(nn.Module):
                 # Downloading the model in case we get error loading the saved model
                 logging.warning(f"{error}. Downloading the Model now...")
 
-                self.model = transformers.T5ForConditionalGeneration.from_pretrained(model_name)
+                self.model = transformers.T5ForConditionalGeneration.from_pretrained(
+                    model_name
+                )
                 self.tokenizer = transformers.T5Tokenizer.from_pretrained(model_name)
                 tools.save_model(model_name, self.model, self.tokenizer)
 
         else:
             logging.info(f"[{model_name}] Downloading Model..")  # Downloading the model
 
-            self.model = transformers.T5ForConditionalGeneration.from_pretrained(model_name)
+            self.model = transformers.T5ForConditionalGeneration.from_pretrained(
+                model_name
+            )
             self.tokenizer = transformers.T5Tokenizer.from_pretrained(model_name)
             tools.save_model(model_name, self.model, self.tokenizer)
 
@@ -64,7 +70,9 @@ class SummarizerBackbone(nn.Module):
             if torch.cuda.is_available() and config.DEVICE == ModelKeys.CUDA.value
             else torch.device(ModelKeys.CPU.value)
         )
-        self.optimizer = transformers.AdamW(self.model.parameters(), lr=config.LEARNING_RATE)
+        self.optimizer = transformers.AdamW(
+            self.model.parameters(), lr=config.LEARNING_RATE
+        )
         self.model_name = model_name
 
     def forward(self, **kwargs):
@@ -85,7 +93,9 @@ class SummarizerBackbone(nn.Module):
         if isinstance(sentence, str):
             return self.tokenizer.batch_encode_plus([sentence], **kwargs)
         else:
-            return [self.tokenizer.batch_encode_plus([sent], **kwargs) for sent in sentence]
+            return [
+                self.tokenizer.batch_encode_plus([sent], **kwargs) for sent in sentence
+            ]
 
     def _get_prediction(self, data):
         """
@@ -126,7 +136,10 @@ class SummarizerBackbone(nn.Module):
                 )
 
             # Decoding the ids using the tokenizer
-            output = [self.tokenizer.decode(ids, skip_special_tokens=True) for ids in summary_ids]
+            output = [
+                self.tokenizer.decode(ids, skip_special_tokens=True)
+                for ids in summary_ids
+            ]
             if (ind + 1) % 100 == 0:
                 logging.info(f"{ind + 1} Samples Done.")
 
@@ -149,7 +162,9 @@ class SummarizerBackbone(nn.Module):
         if isinstance(data, (list, np.ndarray)):
 
             # Creating Dataloader if input data is in list format
-            dataset = SummarizerDataset(self, text_list=data, mode=ServingKeys.SERVE.value)
+            dataset = SummarizerDataset(
+                self, text_list=data, mode=ServingKeys.SERVE.value
+            )
             data = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=False)
 
         return self._get_prediction(data)
@@ -166,7 +181,9 @@ class PegaususParaphraser(nn.Module):
     def __init__(self, model_path: str = config.PARAPHRASING_MODEL) -> None:
 
         super().__init__()
-        self.paraphraser = transformers.PegasusForConditionalGeneration.from_pretrained(model_path)
+        self.paraphraser = transformers.PegasusForConditionalGeneration.from_pretrained(
+            model_path
+        )
         self.tokenizer = transformers.PegasusTokenizer.from_pretrained(model_path)
 
         self.device = (
