@@ -97,6 +97,7 @@ class SummarizerEngine:
             The output JSON containing process status and details (summaries).
 
         """
+        response = {}
         try:
             machine_summaries = self.model.predict(self.data_loader)
             logging.debug("Prediction Done...")
@@ -111,6 +112,10 @@ class SummarizerEngine:
                     self.dataset.json_data,
                     status=ServingKeys.SUCCESS.value,
                 )
+                response = tools.dict_to_json(response)
+
+            elif self.dataset.texts:
+                response = dict(zip(self.dataset.texts, machine_summaries))
 
             # Check if serving is run in the save mode, and store output locally.
             if save_result is True:
@@ -121,6 +126,7 @@ class SummarizerEngine:
             response = tools.get_response(
                 [], self.dataset.json_data, status=ServingKeys.FAILURE.value
             )
+            response = tools.dict_to_json(response)
 
             # Print the execution traceback for the exception raised
             logging.exception(
@@ -128,4 +134,4 @@ class SummarizerEngine:
                 exc_info=True,
             )
 
-        return tools.dict_to_json(response)
+        return response
