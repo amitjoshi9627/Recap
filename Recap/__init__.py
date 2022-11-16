@@ -6,6 +6,7 @@ import numpy as np
 from torch.utils.data.dataloader import DataLoader
 
 from Recap import config, tools
+from Recap.constants import ServingKeys
 from Recap.dataset import SummarizerDataset
 from Recap.engine import SummarizerEngine
 from Recap.model import SummarizerBackbone
@@ -24,14 +25,20 @@ def model_serve(data: Union[Dict, List]) -> Dict:
         Response from the Summarizer serving component.
 
     """
-    if isinstance(data, (list, np.ndarray)):
-        data = tools.list_to_json(data)
-
     # Loading backbone model
     backbone_model = SummarizerBackbone(model_name=config.BASE_FINETUNED_MODEL)
 
-    # Initializing the Summarizer Dataset
-    dataset = SummarizerDataset(model=backbone_model, json_data=data, is_train=False)
+    if isinstance(data, (list, np.ndarray)):
+
+        # Initializing the Summarizer Dataset
+        dataset = SummarizerDataset(
+            model=backbone_model, text_list=data, mode=ServingKeys.SERVE.value
+        )
+
+    else:
+        dataset = SummarizerDataset(
+            model=backbone_model, json_data=data, mode=ServingKeys.SERVE.value
+        )
 
     # Initialize the Data-loader.
     data_loader = DataLoader(dataset, batch_size=config.BATCH_SIZE, shuffle=False)
